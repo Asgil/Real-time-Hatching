@@ -1,0 +1,47 @@
+#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+// Notice that the "1" here equals the "1" in glVertexAttribPointer
+layout(location = 1) in vec3 vertexNormal_modelspace;
+// Input per-vertex texture coordinates [Q1c]
+layout(location = 2) in vec2 vertexTexture_modelspace;
+
+// Values that stay constant for all vertices
+uniform mat4 MVP; //model-view-projection matrix
+uniform mat4 MV; //model-view matrix
+
+// Output data ; will be interpolated for each fragment.
+out vec3 fragmentNormal;
+out vec3 viewDirection;
+out vec2 textureuv;
+out vec4 verticeposition;
+out float distanceCamera;
+
+
+// Output interpolated texture coordinates [Q1c]
+
+void main(){
+
+
+	// Output position of the vertex, projected on screen
+	gl_Position =  MVP * vec4(vertexPosition_modelspace,1);
+
+	// Normal of the vertex, expressed in view space
+	fragmentNormal = ( MV * vec4(vertexNormal_modelspace,0) ).xyz;
+
+	// Copy input texture coordinates into output [Q1c]
+	textureuv = vertexTexture_modelspace;
+
+	// Direction of the view with respect to the vertex, expressed in view space 
+	// Note: in view space, the camera is at (0,0,0). So the direction of the view from the vertex is -p, where p is the vertex position in view space 
+	viewDirection = - ( MV * vec4(vertexPosition_modelspace,1) ).xyz;
+
+	//Passing vertex positions Q4
+	verticeposition = vec4(vertexPosition_modelspace,1);
+
+	distanceCamera = (viewDirection.z);
+
+
+}
+
